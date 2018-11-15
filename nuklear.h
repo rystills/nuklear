@@ -21777,11 +21777,23 @@ nk_is_word_boundary( struct nk_text_edit *state, int idx)
             c == '|');
 }
 NK_INTERN int
+nk_is_newline( struct nk_text_edit *state, int idx)
+{
+    int len;
+    nk_rune c;
+    if (idx <= 0) return 1;
+    if (!nk_str_at_rune(&state->string, idx, &c, &len)) return 1;
+    return (c == '\n');
+}
+NK_INTERN int
 nk_textedit_move_to_word_previous(struct nk_text_edit *state)
 {
    int c = state->cursor - 1;
-   while( c >= 0 && !nk_is_word_boundary(state, c))
-      --c;
+   while( c >= 0 && !nk_is_word_boundary(state, c) && !nk_is_newline(state,c))
+	   --c;
+   //stop at newlines in addition to spaces
+   if (c != state->cursor-1 && c > 0 && c < state->string.len-1 && nk_is_newline(state,c))
+	   return c+1;
 
    if( c < 0 )
       c = 0;
@@ -21793,7 +21805,12 @@ nk_textedit_move_to_word_next(struct nk_text_edit *state)
 {
    const int len = state->string.len;
    int c = state->cursor+1;
-   while( c < len && !nk_is_word_boundary(state, c))
+
+   //stop at newlines in addition to spaces
+   if (c > 1 && nk_is_newline(state,c-1) && c <= len)
+	   return c;
+
+   while( c < len && !nk_is_word_boundary(state, c) && !nk_is_newline(state,c))
       ++c;
 
    if( c > len )
