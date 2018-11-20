@@ -604,6 +604,20 @@ retry:
          nk_textedit_find_charpos(&find, state, state->cursor, state->single_line,
                 font, row_height);
 
+         //if we're at the end of a non-empty string, get our real position by iterating once past our left neighbor
+         if (state->cursor > 0) {
+        	 int len;
+        	 nk_rune c;
+        	 char *begin = nk_str_at_rune(&state->string, state->cursor, &c, &len);
+        	 if (begin && (len == 0)) {
+        		 state->cursor--;
+        		 nk_textedit_find_charpos(&find, state, state->cursor, state->single_line,
+        				 font, row_height);
+        		 nk_textedit_layout_row(&row, state, state->cursor, row_height, font);
+        		 find.x += nk_textedit_get_width(state, find.prev_first, row.num_chars-1, font);
+        	 }
+         }
+
          /* can only go up if there's a previous row */
          if (find.prev_first != find.first_char) {
             /* now find character position up a row */
