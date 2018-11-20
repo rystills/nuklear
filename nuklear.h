@@ -22120,6 +22120,10 @@ retry:
             state->preferred_x = goal_x;
             if (sel) state->select_end = state->cursor;
          }
+         else {
+        	 //no previous row; set the cursor to the leftmost position
+        	 state->cursor = 0;
+         }
       } break;
 
     case NK_KEY_DEL:
