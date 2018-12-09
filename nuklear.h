@@ -743,6 +743,7 @@ enum nk_keys {
     NK_KEY_COPY,
     NK_KEY_SAVE,
     NK_KEY_OPEN,
+    NK_KEY_RUN,
     NK_KEY_CUT,
     NK_KEY_PASTE,
     NK_KEY_UP,
